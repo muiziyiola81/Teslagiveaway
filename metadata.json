@@ -1,0 +1,6 @@
+{
+  "name": "Tesla — Vehicle Allocation & Claim Portal",
+  "description": "Authorized Tesla vehicle allocation and claim platform featuring verified Model S, Model 3, Model Y, and Model X specifications, itemized delivery terms, and prototype claim tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

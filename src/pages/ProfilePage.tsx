@@ -79,13 +79,29 @@ export const ProfilePage: React.FC = () => {
                   {currentUser.fullName}
                 </h2>
                 <p className="text-xs text-zinc-400 truncate">{currentUser.email}</p>
-                <span className="text-[10px] text-zinc-500 uppercase mt-0.5 block">
-                  Member Since: {new Date(currentUser.createdAt || Date.now()).toLocaleDateString()}
-                </span>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] text-zinc-500 uppercase">
+                    Member Since: {new Date(currentUser.createdAt || Date.now()).toLocaleDateString()}
+                  </span>
+                  {currentUser.role && currentUser.role !== 'user' && (
+                    <span className="px-2 py-0.5 text-[9px] font-bold uppercase rounded bg-[#E82127] text-white">
+                      {currentUser.role}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              {(currentUser.role === 'admin' || currentUser.role === 'superadmin') && (
+                <button
+                  onClick={() => navigateTo('admin-dashboard' as any)}
+                  className="px-3.5 sm:px-4 py-2 bg-[#E82127] hover:bg-[#b91318] text-white text-xs font-bold uppercase tracking-wider rounded transition-colors flex items-center gap-1.5 shadow-sm"
+                >
+                  <Shield className="w-3.5 h-3.5" />
+                  <span>Admin Dashboard</span>
+                </button>
+              )}
               {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}

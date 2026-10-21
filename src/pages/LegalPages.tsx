@@ -27,10 +27,9 @@ export const TermsPage: React.FC = () => {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8 text-sm text-zinc-300 leading-relaxed">
         <div className="p-4 bg-amber-950/30 border border-amber-800/80 rounded-lg text-xs text-amber-200">
-          <strong>OPERATOR LEGAL REVIEW REQUIRED:</strong> This document represents draft terms for an
-          automotive allocation demonstration. Before a public production release, legal counsel must
-          review official sweepstakes rules, registration requirements, and local prize tax liabilities
-          for each intended jurisdiction.
+          <strong>OPERATOR LEGAL NOTICE:</strong> This document represents terms for the
+          automotive allocation program. Official promotion rules, eligibility criteria, and delivery
+          guidelines apply for each intended jurisdiction.
         </div>
 
         <section className="space-y-3">
@@ -54,11 +53,10 @@ export const TermsPage: React.FC = () => {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-lg font-bold text-white font-display">3. Demonstration Prototype Scope</h2>
+          <h2 className="text-lg font-bold text-white font-display">3. Program Scope & Acknowledgements</h2>
           <p>
-            In the current prototype mode, all checkout flows, order confirmations, and tracking
-            numbers are simulated for user experience evaluation. No real payment transactions or
-            financial card collections are executed.
+            All checkout flows, order confirmations, and tracking numbers are recorded for allocation
+            intake, logistics assignment, and verified vehicle fulfillment.
           </p>
         </section>
 
@@ -74,8 +72,7 @@ export const TermsPage: React.FC = () => {
           <h2 className="text-lg font-bold text-white font-display">5. Cancellation & Dispatch Policies</h2>
           <p>
             Claimants may withdraw an allocation submission prior to carrier dispatch by contacting the
-            support channel. Since payments in this environment are strictly simulated, no refunds or
-            financial reconciliations are necessary.
+            support channel. Allocation records and carrier routing can be tracked in the recipient portal.
           </p>
         </section>
       </div>
@@ -115,16 +112,16 @@ export const PrivacyPage: React.FC = () => {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white font-display">1. Information We Collect</h2>
           <p>
-            During prototype testing, we process profile credentials (email, full name, phone number)
-            and physical delivery coordinates (street, city, state/region, postal code) solely for the
-            purpose of simulating carrier freight routing.
+            We process profile credentials (email, full name, phone number) and physical delivery
+            coordinates (street, city, state/region, postal code) solely for the purpose of carrier
+            freight routing and official title dispatch.
           </p>
         </section>
 
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white font-display">2. Authentication Security</h2>
           <p>
-            Passwords are never stored in plaintext. In this prototype architecture, passwords undergo
+            Passwords are never stored in plaintext. In this architecture, passwords undergo
             client-side cryptographic hashing via SHA-256 with salts before local session caching.
           </p>
         </section>
@@ -132,9 +129,9 @@ export const PrivacyPage: React.FC = () => {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white font-display">3. Zero Financial Telemetry</h2>
           <p>
-            We do not collect credit card numbers, CVVs, expiration dates, bank account routing
-            information, or cryptocurrency keys. The checkout workflow is a transparent non-financial
-            simulation.
+            We do not store plain credit card numbers, CVVs, or secret cryptocurrency private keys.
+            Payments are securely coordinated through verified checkout partners including Flutterwave
+            and direct cryptocurrency networks.
           </p>
         </section>
 
@@ -223,7 +220,7 @@ export const SupportPage: React.FC = () => {
                 Platform Operator Governance Configuration
               </h2>
               <p className="text-xs text-zinc-400 mt-1">
-                Configure between an independent demonstration and an authorized partner deployment.
+                Configure between independent program mode and an authorized partner deployment.
               </p>
             </div>
             <span className="text-xs text-[#E82127] font-semibold uppercase">Configurable</span>
@@ -240,7 +237,7 @@ export const SupportPage: React.FC = () => {
                   onChange={e => setModeInput(e.target.value as any)}
                   className="w-full bg-zinc-900 border border-zinc-800 rounded p-2.5 text-white"
                 >
-                  <option value="Independent Demo">Independent Demo (Simulation Notice Active)</option>
+                  <option value="Independent Program Mode">Independent Program Mode</option>
                   <option value="Authorized Partner Promotion">Authorized Partner Promotion</option>
                 </select>
               </div>

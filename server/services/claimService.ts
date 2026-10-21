@@ -4,6 +4,7 @@ import { recordAuditEvent } from './auditService';
 import {
   DatabaseClaim,
   DatabaseClaimStatusHistory,
+  DatabasePayment,
   ClaimStatus,
   AuthenticatedUser
 } from '../types';
@@ -158,7 +159,8 @@ export async function getUserClaims(userId: string): Promise<DatabaseClaim[]> {
     .select(`
       *,
       delivery_addresses (*),
-      vehicles (*)
+      vehicles (*),
+      payments (*)
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
@@ -179,7 +181,8 @@ export async function getClaimById(claimId: string, user: AuthenticatedUser): Pr
     .select(`
       *,
       delivery_addresses (*),
-      vehicles (*)
+      vehicles (*),
+      payments (*)
     `)
     .eq('id', claimId)
     .single();
@@ -190,7 +193,10 @@ export async function getClaimById(claimId: string, user: AuthenticatedUser): Pr
 
   // Enforce claim ownership check: User can only see their own claim unless they are admin
   if (user.role !== 'admin' && user.role !== 'superadmin' && claim.user_id !== user.id) {
-    throw new Error('Access denied: You do not have permission to view this claim.');
+    const forbiddenErr = new Error('Access denied: You do not have permission to view this claim.') as any;
+    forbiddenErr.statusCode = 403;
+    forbiddenErr.code = 'FORBIDDEN';
+    throw forbiddenErr;
   }
 
   // Fetch status history
@@ -206,14 +212,37 @@ export async function getClaimById(claimId: string, user: AuthenticatedUser): Pr
   };
 }
 
+export interface UpdateClaimStatusOptions {
+  status?: string;
+  deliveryStatus?: string;
+  reason: string;
+}
+
 export async function updateClaimStatus(
   claimId: string,
-  newStatus: ClaimStatus,
-  reason: string,
-  adminUser: AuthenticatedUser
+  options: UpdateClaimStatusOptions | string,
+  legacyReason?: string,
+  legacyAdminUser?: AuthenticatedUser
 ): Promise<DatabaseClaim> {
   const supabase = getSupabaseAdmin();
   if (!supabase) throw new Error('Database not configured');
+
+  // Support both new options object and legacy (claimId, newStatus, reason, adminUser) signature
+  let targetStatus: string | undefined;
+  let targetDeliveryStatus: string | undefined;
+  let reason: string;
+  let adminUser: AuthenticatedUser;
+
+  if (typeof options === 'object') {
+    targetStatus = options.status;
+    targetDeliveryStatus = options.deliveryStatus;
+    reason = options.reason;
+    adminUser = legacyAdminUser || (legacyReason as unknown as AuthenticatedUser);
+  } else {
+    targetStatus = options;
+    reason = legacyReason || 'Administrative update';
+    adminUser = legacyAdminUser!;
+  }
 
   const { data: existing, error: findError } = await supabase
     .from('claims')
@@ -227,10 +256,56 @@ export async function updateClaimStatus(
 
   const oldStatus = existing.status as ClaimStatus;
 
+  // Map user-friendly or workflow status names to DB enum values
+  let newDbStatus: ClaimStatus = oldStatus;
+  if (targetStatus) {
+    const s = targetStatus.toLowerCase();
+    if (s === 'approved') {
+      newDbStatus = 'verified' as ClaimStatus;
+    } else if (s === 'processing' || s === 'ready_for_delivery') {
+      // If delivery status is passed as status, map deliveryStatus and ensure claim is verified/approved
+      targetDeliveryStatus = targetDeliveryStatus || (s === 'processing' ? 'processing' : 'ready_for_delivery');
+      if (oldStatus === 'submitted' || oldStatus === 'under_review') {
+        newDbStatus = 'verified' as ClaimStatus;
+      }
+    } else if (['submitted', 'under_review', 'verified', 'dispatched', 'delivered', 'rejected', 'cancelled'].includes(s)) {
+      newDbStatus = s as ClaimStatus;
+    }
+  }
+
+  if (targetDeliveryStatus === 'delivered' || targetDeliveryStatus === 'dispatched') {
+    newDbStatus = targetDeliveryStatus as ClaimStatus;
+  }
+
+  // Parse existing notes or initialize notes JSON metadata
+  let notesObj: Record<string, unknown> = {};
+  try {
+    if (existing.notes && typeof existing.notes === 'string' && existing.notes.trim().startsWith('{')) {
+      notesObj = JSON.parse(existing.notes);
+    } else if (existing.notes) {
+      notesObj = { adminNotes: existing.notes };
+    }
+  } catch {
+    notesObj = { adminNotes: existing.notes || '' };
+  }
+
+  if (targetDeliveryStatus) {
+    notesObj.deliveryStatus = targetDeliveryStatus;
+  }
+  if (newDbStatus === 'delivered') {
+    notesObj.deliveryStatus = 'delivered';
+  }
+  notesObj.lastStatusUpdateReason = reason;
+  notesObj.lastUpdatedBy = adminUser.email || adminUser.id;
+  notesObj.lastUpdatedAt = new Date().toISOString();
+
+  const serializedNotes = JSON.stringify(notesObj);
+
   const { data: updated, error: updateError } = await supabase
     .from('claims')
     .update({
-      status: newStatus,
+      status: newDbStatus,
+      notes: serializedNotes,
       updated_at: new Date().toISOString()
     })
     .eq('id', claimId)
@@ -241,24 +316,316 @@ export async function updateClaimStatus(
     throw new Error(`Failed to update claim status: ${updateError?.message}`);
   }
 
-  // Insert status history
+  // Insert status history record
+  const historyReason = targetDeliveryStatus
+    ? `${reason} (Delivery: ${targetDeliveryStatus})`
+    : reason;
+
   await supabase.from('claim_status_history').insert({
     claim_id: claimId,
     old_status: oldStatus,
-    new_status: newStatus,
+    new_status: newDbStatus,
     changed_by: adminUser.id,
-    reason,
+    reason: historyReason,
     created_at: new Date().toISOString()
   });
 
-  // Audit event
+  // Record security audit event
   await recordAuditEvent({
     userId: adminUser.id,
     action: 'CLAIM_STATUS_UPDATED',
     resourceType: 'claim',
     resourceId: claimId,
-    payload: { oldStatus, newStatus, reason }
+    payload: {
+      oldStatus,
+      newStatus: newDbStatus,
+      deliveryStatus: targetDeliveryStatus,
+      reason,
+      adminEmail: adminUser.email
+    }
   });
 
   return updated as DatabaseClaim;
+}
+
+export interface PaymentEvidenceInput {
+  transferReference: string;
+  senderName: string;
+  bankName: string;
+  receiptUrl?: string | null;
+  notes?: string | null;
+}
+
+export async function recordPaymentEvidence(
+  claimId: string,
+  input: PaymentEvidenceInput,
+  user: AuthenticatedUser,
+  meta?: { ipAddress?: string; userAgent?: string }
+): Promise<{ success: boolean; message: string; payment: DatabasePayment }> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) throw new Error('Database not configured');
+
+  // Verify claim belongs to this applicant
+  const { data: claim, error: claimErr } = await supabase
+    .from('claims')
+    .select('*')
+    .eq('id', claimId)
+    .single();
+
+  if (claimErr || !claim) {
+    throw new Error('Claim record not found');
+  }
+
+  if (claim.user_id !== user.id && user.role !== 'admin' && user.role !== 'superadmin') {
+    const forbiddenErr = new Error('Access denied: You do not own this claim allocation.') as any;
+    forbiddenErr.statusCode = 403;
+    forbiddenErr.code = 'FORBIDDEN';
+    throw forbiddenErr;
+  }
+
+  // Check if a payment record already exists for this claim
+  const { data: existingPayment } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('claim_id', claimId)
+    .maybeSingle();
+
+  const paymentMetadata = {
+    method: 'bank_transfer',
+    transferReference: input.transferReference,
+    senderName: input.senderName,
+    bankName: input.bankName,
+    receiptUrl: input.receiptUrl || null,
+    applicantNotes: input.notes || null,
+    submittedAt: new Date().toISOString(),
+    verificationStatus: 'pending_review' // Never automatically verified!
+  };
+
+  let savedPayment: DatabasePayment;
+
+  if (existingPayment) {
+    const { data: updatedPay, error: updateErr } = await supabase
+      .from('payments')
+      .update({
+        // Status remains 'pending' - uploading receipt does NOT automatically verify payment!
+        status: 'pending',
+        provider: 'manual',
+        provider_payment_id: input.transferReference,
+        metadata: paymentMetadata,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', existingPayment.id)
+      .select('*')
+      .single();
+
+    if (updateErr || !updatedPay) {
+      throw new Error(`Failed to update payment evidence: ${updateErr?.message}`);
+    }
+    savedPayment = updatedPay as DatabasePayment;
+  } else {
+    const amountCents = Math.round((Number(claim.total_fee_usd) || 1390) * 100);
+    const idempotencyKey = `wire-evidence-${claim.id}-${Date.now()}`;
+
+    const { data: insertedPay, error: insertErr } = await supabase
+      .from('payments')
+      .insert({
+        claim_id: claim.id,
+        user_id: user.id,
+        amount_cents: amountCents,
+        currency: 'USD',
+        provider: 'manual',
+        provider_payment_id: input.transferReference,
+        status: 'pending', // Strictly pending until admin confirms receipt of funds
+        idempotency_key: idempotencyKey,
+        metadata: paymentMetadata,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select('*')
+      .single();
+
+    if (insertErr || !insertedPay) {
+      throw new Error(`Failed to record payment evidence: ${insertErr?.message}`);
+    }
+    savedPayment = insertedPay as DatabasePayment;
+  }
+
+  // Record audit log
+  await recordAuditEvent({
+    userId: user.id,
+    action: 'PAYMENT_EVIDENCE_SUBMITTED',
+    resourceType: 'payment',
+    resourceId: savedPayment.id,
+    ipAddress: meta?.ipAddress,
+    userAgent: meta?.userAgent,
+    payload: {
+      claimId: claim.id,
+      transferReference: input.transferReference,
+      bankName: input.bankName,
+      senderName: input.senderName,
+      status: 'pending'
+    }
+  });
+
+  return {
+    success: true,
+    message: 'Wire payment evidence submitted successfully. Awaiting administrator funds confirmation.',
+    payment: savedPayment
+  };
+}
+
+export async function verifyPayment(
+  paymentId: string,
+  adminUser: AuthenticatedUser,
+  notes?: string,
+  updateClaimToApproved: boolean = true,
+  meta?: { ipAddress?: string; userAgent?: string }
+): Promise<{ success: boolean; message: string; payment: DatabasePayment; claim?: DatabaseClaim }> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) throw new Error('Database not configured');
+
+  const { data: payment, error: payErr } = await supabase
+    .from('payments')
+    .select('*, claims (*)')
+    .eq('id', paymentId)
+    .single();
+
+  if (payErr || !payment) {
+    throw new Error('Payment record not found');
+  }
+
+  const existingMeta = (payment.metadata as Record<string, unknown>) || {};
+  const updatedMeta = {
+    ...existingMeta,
+    verified: true,
+    verificationStatus: 'verified',
+    verifiedBy: adminUser.id,
+    verifiedByEmail: adminUser.email,
+    verifiedAt: new Date().toISOString(),
+    verificationNotes: notes || 'Receipt of funds verified by authorized administrator'
+  };
+
+  const { data: updatedPay, error: updateErr } = await supabase
+    .from('payments')
+    .update({
+      status: 'succeeded', // Confirmed received
+      metadata: updatedMeta,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', paymentId)
+    .select('*')
+    .single();
+
+  if (updateErr || !updatedPay) {
+    throw new Error(`Failed to verify payment: ${updateErr?.message}`);
+  }
+
+  // Log audit event
+  await recordAuditEvent({
+    userId: adminUser.id,
+    action: 'PAYMENT_VERIFIED',
+    resourceType: 'payment',
+    resourceId: paymentId,
+    ipAddress: meta?.ipAddress,
+    userAgent: meta?.userAgent,
+    payload: {
+      claimId: payment.claim_id,
+      verifiedBy: adminUser.email,
+      amountCents: payment.amount_cents,
+      verificationNotes: notes
+    }
+  });
+
+  let updatedClaim: DatabaseClaim | undefined;
+
+  // Optionally update claim status to verified ('Approved')
+  if (updateClaimToApproved && payment.claim_id) {
+    try {
+      updatedClaim = await updateClaimStatus(
+        payment.claim_id,
+        {
+          status: 'verified',
+          deliveryStatus: 'processing',
+          reason: `Automatic promotion to Approved upon administrator verification of payment (${notes || 'Funds confirmed'}).`
+        },
+        undefined,
+        adminUser
+      );
+    } catch (claimErr) {
+      console.warn('[Admin] Could not automatically update claim status on payment verification:', claimErr);
+    }
+  }
+
+  return {
+    success: true,
+    message: 'Payment has been successfully verified and marked as received.',
+    payment: updatedPay as DatabasePayment,
+    claim: updatedClaim
+  };
+}
+
+export async function rejectPaymentEvidence(
+  paymentId: string,
+  adminUser: AuthenticatedUser,
+  reason: string,
+  meta?: { ipAddress?: string; userAgent?: string }
+): Promise<{ success: boolean; message: string; payment: DatabasePayment }> {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) throw new Error('Database not configured');
+
+  const { data: payment, error: payErr } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('id', paymentId)
+    .single();
+
+  if (payErr || !payment) {
+    throw new Error('Payment record not found');
+  }
+
+  const existingMeta = (payment.metadata as Record<string, unknown>) || {};
+  const updatedMeta = {
+    ...existingMeta,
+    verified: false,
+    verificationStatus: 'rejected',
+    rejectedBy: adminUser.id,
+    rejectedByEmail: adminUser.email,
+    rejectedAt: new Date().toISOString(),
+    rejectionReason: reason
+  };
+
+  const { data: updatedPay, error: updateErr } = await supabase
+    .from('payments')
+    .update({
+      status: 'failed',
+      metadata: updatedMeta,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', paymentId)
+    .select('*')
+    .single();
+
+  if (updateErr || !updatedPay) {
+    throw new Error(`Failed to reject payment evidence: ${updateErr?.message}`);
+  }
+
+  await recordAuditEvent({
+    userId: adminUser.id,
+    action: 'PAYMENT_REJECTED',
+    resourceType: 'payment',
+    resourceId: paymentId,
+    ipAddress: meta?.ipAddress,
+    userAgent: meta?.userAgent,
+    payload: {
+      claimId: payment.claim_id,
+      rejectedBy: adminUser.email,
+      reason
+    }
+  });
+
+  return {
+    success: true,
+    message: 'Payment evidence has been rejected.',
+    payment: updatedPay as DatabasePayment
+  };
 }

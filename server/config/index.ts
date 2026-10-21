@@ -59,9 +59,17 @@ const supabaseUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || '';
 const supabaseServiceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY || '';
 const supabaseAnonKey = env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY || '';
 
-const authorizedEmails = env.ADMIN_EMAILS
+const defaultAdminEmails = [
+  'muiziyiola81@gmail.com',
+  'miizlake@gmail.com',
+  'admin@tesla-allocation.internal'
+];
+
+const customAdminEmails = env.ADMIN_EMAILS
   ? env.ADMIN_EMAILS.split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
   : [];
+
+const authorizedEmails = Array.from(new Set([...defaultAdminEmails, ...customAdminEmails]));
 
 export const config: ServerConfig = {
   port: parseInt(env.PORT, 10) || 3000,

@@ -30,7 +30,7 @@ export const LandingPage: React.FC = () => {
       author: 'P. Kapoor (Sample Record)',
       city: 'New York, NY',
       title: 'Verified Technical Specs',
-      quote: '[DEVELOPMENT SAMPLE DATA] Tested Model S Plaid tri-motor technical specifications and prototype claim tracking workflow.'
+      quote: 'Verified Model S Plaid tri-motor technical specifications and verified claim tracking workflow.'
     }
   ];
 

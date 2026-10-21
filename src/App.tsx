@@ -27,6 +27,7 @@ const PrivacyPage = lazy(() => import('./pages/LegalPages').then(m => ({ default
 const SupportPage = lazy(() => import('./pages/LegalPages').then(m => ({ default: m.SupportPage })));
 const SignInPage = lazy(() => import('./pages/AuthPages').then(m => ({ default: m.SignInPage })));
 const SignUpPage = lazy(() => import('./pages/AuthPages').then(m => ({ default: m.SignUpPage })));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage').then(m => ({ default: m.AdminDashboardPage })));
 
 import { TeslaEmblem } from './components/TeslaBranding';
 
@@ -96,6 +97,7 @@ const MainRouter: React.FC = () => {
             <DeliveryAddressPage />
           </Suspense>
         );
+      case 'checkout':
       case 'demo-checkout':
         return (
           <Suspense fallback={<PageLoadingFallback />}>
@@ -136,6 +138,12 @@ const MainRouter: React.FC = () => {
         return (
           <Suspense fallback={<PageLoadingFallback />}>
             <SignUpPage />
+          </Suspense>
+        );
+      case 'admin-dashboard':
+        return (
+          <Suspense fallback={<PageLoadingFallback />}>
+            <AdminDashboardPage />
           </Suspense>
         );
       default:

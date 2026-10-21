@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { Menu, X, ArrowUpRight, ShieldCheck, User as UserIcon, LogOut, Search } from 'lucide-react';
+import { Menu, X, ArrowUpRight, ShieldCheck, User as UserIcon, LogOut, Search, Shield } from 'lucide-react';
 import { TeslaLogo, TeslaEmblem, TeslaWordmark, TeslaLogoLockup } from './TeslaBranding';
 
 export const Navbar: React.FC = () => {
@@ -16,6 +16,7 @@ export const Navbar: React.FC = () => {
   } = useApp();
 
   const drawerRef = useRef<HTMLDivElement>(null);
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'superadmin';
 
   // Close hamburger drawer on ESC key
   useEffect(() => {
@@ -33,6 +34,7 @@ export const Navbar: React.FC = () => {
     { id: 'explore', label: 'Explore Vehicles' },
     { id: 'how-to-claim', label: 'How to Claim' },
     { id: 'my-claims', label: 'My Claims' },
+    ...(isAdmin ? [{ id: 'admin-dashboard', label: 'Admin Console' }] : []),
     { id: 'profile', label: 'My Profile' },
     { id: 'delivery-address', label: 'Delivery Address' },
     { id: 'reviews', label: 'Reviews' },
@@ -44,6 +46,7 @@ export const Navbar: React.FC = () => {
     { id: 'explore', label: 'Explore Vehicles' },
     { id: 'how-to-claim', label: 'How to Claim Your Tesla' },
     { id: 'my-claims', label: 'My Claims' },
+    ...(isAdmin ? [{ id: 'admin-dashboard', label: 'Admin Operations Console' }] : []),
     { id: 'profile', label: 'My Profile' },
     { id: 'delivery-address', label: 'Delivery Address' },
     { id: 'reviews', label: 'Customer Reviews' },
@@ -120,6 +123,17 @@ export const Navbar: React.FC = () => {
             >
               <Search className="w-4 h-4" />
             </button>
+
+            {isAdmin && (
+              <button
+                onClick={() => navigateTo('admin-dashboard' as any)}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white bg-[#E82127] hover:bg-[#b91318] rounded-md transition-colors whitespace-nowrap shrink-0 shadow-sm"
+                title="Open Admin Operations Console"
+              >
+                <Shield className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Admin</span>
+              </button>
+            )}
 
             {currentUser ? (
               <button

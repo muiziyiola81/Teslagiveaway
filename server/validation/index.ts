@@ -18,16 +18,43 @@ export const claimSubmissionSchema = z.object({
 });
 
 export const claimStatusUpdateSchema = z.object({
-  status: z.enum([
-    'submitted',
-    'under_review',
-    'verified',
-    'dispatched',
-    'delivered',
-    'rejected',
-    'cancelled'
-  ]),
+  status: z
+    .enum([
+      'submitted',
+      'under_review',
+      'verified',
+      'approved',
+      'dispatched',
+      'delivered',
+      'rejected',
+      'cancelled',
+      'processing',
+      'ready_for_delivery'
+    ])
+    .optional(),
+  deliveryStatus: z
+    .enum(['processing', 'ready_for_delivery', 'delivered', 'dispatched', 'not_scheduled', 'in_transit'])
+    .optional(),
   reason: z.string().trim().min(3, 'Reason for status update is mandatory').max(500)
+}).refine(data => data.status !== undefined || data.deliveryStatus !== undefined, {
+  message: 'Either status or deliveryStatus must be provided for status modification.'
+});
+
+export const paymentEvidenceSchema = z.object({
+  transferReference: z.string().trim().min(3, 'Transfer reference number must be at least 3 characters').max(100),
+  senderName: z.string().trim().min(2, 'Sender name must be at least 2 characters').max(100),
+  bankName: z.string().trim().min(2, 'Bank name must be at least 2 characters').max(100),
+  receiptUrl: z.string().trim().optional().nullable(),
+  notes: z.string().trim().max(500).optional().nullable()
+});
+
+export const paymentVerificationSchema = z.object({
+  notes: z.string().trim().max(500).optional(),
+  updateClaimStatusToApproved: z.boolean().optional()
+});
+
+export const paymentRejectionSchema = z.object({
+  reason: z.string().trim().min(3, 'Rejection reason is mandatory').max(500)
 });
 
 export const vehicleCreateSchema = z.object({

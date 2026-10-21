@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 // Standard rate limiter for general API endpoints
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per 15 mins
+  max: process.env.NODE_ENV === 'test' ? 5000 : 200, // Higher limit in test mode
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false,
   message: {
@@ -18,7 +18,7 @@ export const apiLimiter = rateLimit({
 // Stricter rate limiter for sensitive authentication & claim endpoints
 export const sensitiveEndpointLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15, // Limit each IP to 15 sensitive attempts per window
+  max: process.env.NODE_ENV === 'test' ? 1000 : 30, // Limit sensitive attempts per window
   standardHeaders: true,
   legacyHeaders: false,
   message: {

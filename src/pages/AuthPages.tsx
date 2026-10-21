@@ -5,7 +5,7 @@ import { DeliveryAddress } from '../types';
 import { TeslaLogoLockup, TeslaEmblem } from '../components/TeslaBranding';
 
 export const SignInPage: React.FC = () => {
-  const { signIn, resetPassword, navigateTo, selectedVehicleId } = useApp();
+  const { signIn, resetPassword, navigateTo, selectedVehicleId, claims } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -28,8 +28,12 @@ export const SignInPage: React.FC = () => {
     setIsLoading(false);
 
     if (res.success) {
-      if (selectedVehicleId) {
+      if (res.user?.role === 'admin' || res.user?.role === 'superadmin') {
+        navigateTo('admin-dashboard' as any);
+      } else if (selectedVehicleId) {
         navigateTo('vehicle-details', selectedVehicleId);
+      } else if (claims && claims.length > 0) {
+        navigateTo('my-claims');
       } else {
         navigateTo('home');
       }
@@ -280,10 +284,12 @@ export const SignUpPage: React.FC = () => {
     setIsLoading(false);
 
     if (res.success) {
-      if (res.message && res.message.includes('email')) {
+      if (res.message && res.message.includes('email') && !res.user) {
         setInfoMsg(res.message);
       } else {
-        if (selectedVehicleId) {
+        if (res.user?.role === 'admin' || res.user?.role === 'superadmin') {
+          navigateTo('admin-dashboard' as any);
+        } else if (selectedVehicleId) {
           navigateTo('vehicle-details', selectedVehicleId);
         } else {
           navigateTo('home');
@@ -305,7 +311,7 @@ export const SignUpPage: React.FC = () => {
             Create Tesla Recipient Account
           </h1>
           <p className="text-xs text-zinc-400">
-            Register to participate in vehicle allocations and claim demonstrations.
+            Register to participate in vehicle allocations and claim fulfillment.
           </p>
         </div>
 

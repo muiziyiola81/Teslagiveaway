@@ -2,11 +2,12 @@ import { Router } from 'express';
 import {
   submitClaim,
   listMyClaims,
-  getClaimDetails
+  getClaimDetails,
+  submitPaymentEvidence
 } from '../controllers/claimController';
 import { authenticateToken } from '../middleware/auth';
 import { validateBody } from '../middleware/validate';
-import { claimSubmissionSchema } from '../validation';
+import { claimSubmissionSchema, paymentEvidenceSchema } from '../validation';
 import { sensitiveEndpointLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
@@ -23,5 +24,11 @@ router.post(
 
 router.get('/my-claims', listMyClaims);
 router.get('/:id', getClaimDetails);
+router.post(
+  '/:id/payment-evidence',
+  sensitiveEndpointLimiter,
+  validateBody(paymentEvidenceSchema),
+  submitPaymentEvidence
+);
 
 export default router;

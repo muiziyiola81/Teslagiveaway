@@ -6,7 +6,48 @@ export type ClaimStatus =
   | 'Under Review'
   | 'Approved'
   | 'Rejected'
+  | 'Processing'
+  | 'Ready for Delivery'
+  | 'Delivered'
   | 'Completed';
+
+export type DeliveryStatus =
+  | 'Not Scheduled'
+  | 'Processing'
+  | 'Ready for Delivery'
+  | 'In Transit'
+  | 'Delivered';
+
+export type PaymentStatus =
+  | 'Pending'
+  | 'Evidence Submitted'
+  | 'Pending Manual Verification'
+  | 'Verified'
+  | 'Failed'
+  | 'Refunded';
+
+export interface ClaimPayment {
+  id?: string;
+  status: PaymentStatus;
+  amountCents?: number;
+  amountUSD?: number;
+  provider?: string;
+  method?: string;
+  transferReference?: string;
+  senderName?: string;
+  bankName?: string;
+  receiptUrl?: string | null;
+  cryptoAddress?: string;
+  cryptoNetwork?: string;
+  cryptoAsset?: string;
+  submittedAt?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+  verifiedByEmail?: string;
+  verificationNotes?: string;
+  rejectionReason?: string;
+  applicantNotes?: string;
+}
 
 export interface VehicleSpecs {
   acceleration0to60: string;
@@ -74,7 +115,7 @@ export interface User {
   address?: DeliveryAddress;
   role?: 'user' | 'support' | 'admin' | 'superadmin';
   createdAt?: string;
-  isPrototypeAccount?: boolean;
+  isVerifiedAccount?: boolean;
 }
 
 export interface ClaimTimelineItem {
@@ -92,6 +133,8 @@ export interface Claim {
   vehicleId: string;
   vehicleSnapshot: Vehicle;
   status: ClaimStatus;
+  deliveryStatus?: DeliveryStatus;
+  payment?: ClaimPayment;
   submissionDate: string;
   lastUpdatedDate: string;
   deliveryAddress: DeliveryAddress;
@@ -100,11 +143,17 @@ export interface Claim {
     deliveryFeeUSD: number;
     documentationFeeUSD: number;
     totalUSD: number;
-    isSimulation: boolean;
+    isSimulation?: boolean;
   };
   authorizedNextSteps: string[];
   timeline: ClaimTimelineItem[];
   notes?: string;
+  applicant?: {
+    id: string;
+    fullName: string;
+    email: string;
+    phone: string;
+  };
 }
 
 export interface Review {
@@ -140,16 +189,18 @@ export type PageView =
   | 'my-claims'
   | 'profile'
   | 'delivery-address'
+  | 'checkout'
   | 'demo-checkout'
   | 'reviews'
   | 'terms'
   | 'privacy'
   | 'support'
   | 'auth-signin'
-  | 'auth-signup';
+  | 'auth-signup'
+  | 'admin-dashboard';
 
 export interface PromotionConfig {
-  mode: 'Independent Demo' | 'Authorized Partner Promotion';
+  mode: 'Independent Program Mode' | 'Authorized Partner Promotion';
   operatorName: string;
   contactEmail: string;
   phoneSupport: string;

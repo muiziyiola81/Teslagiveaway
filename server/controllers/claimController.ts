@@ -100,3 +100,43 @@ export async function getClaimDetails(
     next(err);
   }
 }
+
+export async function submitPaymentEvidence(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    if (!req.user) {
+      res.status(401).json({
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Authentication required to submit payment evidence.',
+          timestamp: new Date().toISOString()
+        }
+      });
+      return;
+    }
+
+    const { id } = req.params;
+    const { transferReference, senderName, bankName, receiptUrl, notes } = req.body;
+
+    const result = await (await import('../services/claimService')).recordPaymentEvidence(
+      id,
+      { transferReference, senderName, bankName, receiptUrl, notes },
+      req.user,
+      {
+        ipAddress: req.ip || req.socket.remoteAddress,
+        userAgent: req.headers['user-agent']
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result.payment
+    });
+  } catch (err) {
+    next(err);
+  }
+}

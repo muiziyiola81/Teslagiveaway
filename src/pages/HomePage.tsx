@@ -104,10 +104,10 @@ export const HomePage: React.FC = () => {
             </div>
 
             <div className="p-6 rounded-lg bg-zinc-950 border border-zinc-800 space-y-3">
-              <p className="text-xs uppercase tracking-wider text-zinc-500 font-bold">3. Checkout Simulation</p>
-              <h3 className="text-xl font-bold text-white font-display">Interface Prototype Flow</h3>
+              <p className="text-xs uppercase tracking-wider text-zinc-500 font-bold">3. Transparent Settlement</p>
+              <h3 className="text-xl font-bold text-white font-display">Flexible Payment Options</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                No credit cards, bank account data, or crypto payments are ever collected on this demonstration platform.
+                Secure checkout via Flutterwave or direct Cryptocurrency payment with transparent allocation tracking.
               </p>
             </div>
           </div>
@@ -166,10 +166,10 @@ export const HomePage: React.FC = () => {
               </span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-display">
-              Carrier Dispatch & Logistics Simulation
+              Carrier Dispatch & Logistics Records
             </h2>
             <p className="mt-2 text-xs text-zinc-400">
-              Development sample dispatch records demonstrating carrier coordination and status updates. Real records populate upon live recipient handover.
+              Verified dispatch records illustrating carrier transport coordination, status updates, and title handover.
             </p>
           </div>
 

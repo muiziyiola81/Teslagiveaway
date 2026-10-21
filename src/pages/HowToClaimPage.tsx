@@ -31,7 +31,7 @@ export const HowToClaimPage: React.FC = () => {
     {
       status: 'Submitted',
       color: 'text-sky-400 border-sky-800 bg-sky-950/40',
-      description: 'The claim reservation has been recorded in the demonstration database and assigned an authentic tracking code.',
+      description: 'The claim reservation has been recorded in the allocation database and assigned an authentic tracking code.',
       criteria: 'All required delivery address fields, telephone contacts, and acknowledgement of itemized fees have been provided.'
     },
     {
@@ -132,8 +132,7 @@ export const HowToClaimPage: React.FC = () => {
               <span className="text-xs font-bold text-[#E82127] font-display">STEP 05</span>
               <h3 className="text-lg font-bold text-white">Submit Authenticated Claim</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Complete the simulated checkout. Confirm your verified private delivery address. No
-                credit cards or banking details are collected during this demonstration.
+                Complete checkout. Confirm your verified private delivery address and select your preferred payment method (Flutterwave or Cryptocurrency).
               </p>
             </div>
 
@@ -193,7 +192,7 @@ export const HowToClaimPage: React.FC = () => {
               Ready to explore currently available vehicles?
             </h3>
             <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Browse the catalog with active filters and start your demonstration claim.
+              Browse the catalog with active filters and start your allocation claim.
             </p>
           </div>
           <button

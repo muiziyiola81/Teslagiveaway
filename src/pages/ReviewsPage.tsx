@@ -95,7 +95,7 @@ export const ReviewsPage: React.FC = () => {
             className="w-full sm:w-auto px-4 py-2 bg-[#E82127] hover:bg-[#b91318] text-white font-bold text-xs uppercase tracking-wider rounded transition-colors flex items-center justify-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>{isFormOpen ? 'Cancel Form' : 'Submit Prototype Review'}</span>
+            <span>{isFormOpen ? 'Cancel Form' : 'Submit Review'}</span>
           </button>
         </div>
 
@@ -106,7 +106,7 @@ export const ReviewsPage: React.FC = () => {
             className="p-4 sm:p-6 bg-zinc-950 border border-zinc-800 rounded-xl space-y-4 text-xs animate-in fade-in duration-200"
           >
             <h2 className="text-base font-bold text-white font-display">
-              Submit Prototype Feedback
+              Submit Recipient Feedback
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -178,7 +178,7 @@ export const ReviewsPage: React.FC = () => {
                   rows={4}
                   value={formData.content}
                   onChange={e => setFormData({ ...formData, content: e.target.value })}
-                  placeholder="Share details on your evaluation of vehicle specs, fee disclosures, and checkout simulation..."
+                  placeholder="Share details on your evaluation of vehicle specs, fee disclosures, and checkout experience..."
                   className="w-full bg-zinc-900 border border-zinc-800 rounded p-2.5 text-white"
                 />
               </div>

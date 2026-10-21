@@ -17,7 +17,6 @@ import { TeslaEmblem } from '../components/TeslaBranding';
 
 export const VehicleDetailsPage: React.FC = () => {
   const { selectedVehicle, navigateTo, currentUser } = useApp();
-  const [activeImageKey, setActiveImageKey] = useState<'primary' | 'exteriorAngle' | 'interior'>('primary');
   const [activeTab, setActiveTab] = useState<'specs' | 'interior' | 'technology' | 'charging' | 'terms'>('specs');
 
   // Fallback to first vehicle if none selected directly
@@ -42,12 +41,6 @@ export const VehicleDetailsPage: React.FC = () => {
 
   const v = selectedVehicle;
 
-  const galleryImages = [
-    { key: 'primary', label: 'Exterior Studio', src: v.images.primary },
-    { key: 'exteriorAngle', label: 'Aerodynamic Angle', src: v.images.exteriorAngle },
-    { key: 'interior', label: 'Minimalist Cockpit', src: v.images.interior }
-  ];
-
   return (
     <div className="min-h-screen bg-[#060607] text-white pb-20">
       {/* Top Back Navigation Bar */}
@@ -71,44 +64,19 @@ export const VehicleDetailsPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         {/* Main Grid: Gallery on Left, Specs & Allocation Card on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* Left Column: Cinematic Gallery */}
+          {/* Left Column: Vehicle Image & In-Depth Details */}
           <div className="lg:col-span-7 space-y-4">
             <div className="aspect-[16/9] w-full bg-zinc-900 rounded-xl overflow-hidden border border-white/[0.08] relative">
               <img
-                src={v.images[activeImageKey]}
-                alt={`${v.year} ${v.model} ${galleryImages.find(g => g.key === activeImageKey)?.label}`}
-                className="w-full h-full object-cover transition-opacity duration-300"
+                src={v.images.primary}
+                alt={`${v.year} ${v.model} ${v.trim}`}
+                className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
                 decoding="async"
               />
               <div className="absolute top-3 sm:top-4 left-3 sm:left-4 bg-zinc-950/85 backdrop-blur-md px-2.5 sm:px-3 py-1 rounded text-[11px] sm:text-xs font-bold text-white border border-white/10 max-w-[90%] truncate">
                 {v.availabilityStatus} · {v.unitsRemaining} Units Left
               </div>
-            </div>
-
-            {/* Thumbnail Strip */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-              {galleryImages.map(img => (
-                <button
-                  key={img.key}
-                  onClick={() => setActiveImageKey(img.key as any)}
-                  className={`aspect-[16/9] rounded-lg overflow-hidden border transition-all text-left relative ${
-                    activeImageKey === img.key
-                      ? 'border-[#E82127] ring-1 ring-[#E82127]'
-                      : 'border-zinc-800 opacity-60 hover:opacity-100'
-                  }`}
-                >
-                  <img
-                    src={img.src}
-                    alt={img.label}
-                    className="w-full h-full object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-end p-1.5 sm:p-2">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-white truncate">{img.label}</span>
-                  </div>
-                </button>
-              ))}
             </div>
 
             {/* Overview Editorial Block */}
@@ -280,20 +248,20 @@ export const VehicleDetailsPage: React.FC = () => {
                 <button
                   onClick={() => {
                     if (currentUser) {
-                      navigateTo('demo-checkout', v.id);
+                      navigateTo('checkout', v.id);
                     } else {
                       navigateTo('auth-signin', v.id);
                     }
                   }}
                   className="w-full py-3.5 sm:py-4 px-3 sm:px-4 bg-[#E82127] hover:bg-[#b91318] text-white font-bold text-xs uppercase tracking-wider rounded-md transition-colors shadow-lg flex items-center justify-center gap-2 text-center leading-normal"
                 >
-                  <span>{currentUser ? 'Proceed to Simulated Claim Checkout' : 'Sign In to Claim Vehicle'}</span>
+                  <span>{currentUser ? 'Proceed to Checkout' : 'Sign In to Claim Vehicle'}</span>
                 </button>
 
                 <div className="flex items-start gap-2 p-3 bg-zinc-900/40 border border-zinc-800/80 rounded text-[11px] text-zinc-400">
                   <Info className="w-4 h-4 text-[#E82127] shrink-0 mt-0.5" />
                   <span>
-                    <strong>Checkout is a simulation.</strong> No financial information or real payments are accepted. You will receive an immediate demo tracking record.
+                    <strong>Vehicle Allocation Notice.</strong> Verify your private delivery coordinates and complete itemized logistics settlement to secure dispatch.
                   </span>
                 </div>
               </div>

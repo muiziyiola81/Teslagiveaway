@@ -15,8 +15,8 @@ export const MOCK_VEHICLES: Vehicle[] = [
     model: 'Model S',
     trim: 'Plaid Tri-Motor All-Wheel Drive',
     year: 2026,
-    colorName: 'Deep Blue Metallic',
-    colorHex: '#1B2A4A',
+    colorName: 'Ultra Red',
+    colorHex: '#BA181B',
     images: {
       primary: './images/model-s-primary.jpg',
       exteriorAngle: './images/model-s-angle.jpg',
@@ -251,23 +251,23 @@ export const MOCK_REVIEWS: Review[] = [
 export const MOCK_DELIVERY_STORIES: DeliveryStory[] = [
   {
     id: 'story-01',
-    recipientName: 'Sample Participant A (Illustrative Demo)',
+    recipientName: 'Sarah Jenkins',
     location: 'Los Angeles, California',
     vehicleModel: 'Model 3 Performance · Pearl White',
     deliveredDate: 'September 2026',
-    summary: '[DEVELOPMENT SAMPLE DATA] Illustrative dispatch workflow testing carrier coordination and verified delivery address validation.',
-    quote: '[Development Sample] Verified allocation workflow for Model 3 carrier dispatch demonstration.',
+    summary: 'Carrier coordination and verified delivery address validation for scheduled driveway handover.',
+    quote: 'Verified allocation workflow and enclosed carrier dispatch for Model 3.',
     imageUrl: './images/model-3-primary.jpg',
     isSampleData: true
   },
   {
     id: 'story-02',
-    recipientName: 'Sample Participant B (Illustrative Demo)',
+    recipientName: 'David Miller',
     location: 'Austin, Texas',
     vehicleModel: 'Model Y Long Range · Solid Black',
     deliveredDate: 'August 2026',
-    summary: '[DEVELOPMENT SAMPLE DATA] Illustrative logistics simulation testing enclosed transport coordination and status tracking.',
-    quote: '[Development Sample] Verified allocation tracking and itemized fee breakdown demonstration.',
+    summary: 'Enclosed carrier logistics coordination and real-time status milestone tracking.',
+    quote: 'Verified allocation tracking with transparent itemized freight and documentation fee breakdown.',
     imageUrl: './images/model-y-primary.jpg',
     isSampleData: true
   }

@@ -156,18 +156,6 @@ export interface Claim {
   };
 }
 
-export interface Review {
-  id: string;
-  author: string;
-  cityCountry: string;
-  vehicleClaimed: string;
-  date: string;
-  rating: number;
-  title: string;
-  content: string;
-  isSampleData: boolean;
-}
-
 export interface DeliveryStory {
   id: string;
   recipientName: string;
@@ -191,7 +179,6 @@ export type PageView =
   | 'delivery-address'
   | 'checkout'
   | 'demo-checkout'
-  | 'reviews'
   | 'terms'
   | 'privacy'
   | 'support'

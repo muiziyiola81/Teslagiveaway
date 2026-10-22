@@ -132,7 +132,7 @@ export const HowToClaimPage: React.FC = () => {
               <span className="text-xs font-bold text-[#E82127] font-display">STEP 05</span>
               <h3 className="text-lg font-bold text-white">Submit Authenticated Claim</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Complete checkout. Confirm your verified private delivery address and select your preferred payment method (Flutterwave or Cryptocurrency).
+                Complete checkout. Confirm your verified private delivery address and submit logistics fee settlement via direct Cryptocurrency.
               </p>
             </div>
 

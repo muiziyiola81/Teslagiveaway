@@ -1,4 +1,4 @@
-import { Vehicle, Review, DeliveryStory, PromotionConfig } from '../types';
+import { Vehicle, DeliveryStory, PromotionConfig } from '../types';
 
 export const INITIAL_PROMOTION_CONFIG: PromotionConfig = {
   mode: 'Authorized Partner Promotion',
@@ -6,7 +6,7 @@ export const INITIAL_PROMOTION_CONFIG: PromotionConfig = {
   contactEmail: 'support@tesla-allocation-portal.internal',
   phoneSupport: '+1 (800) 555-0199',
   legalEntityNotice: 'Authorized Tesla vehicle promotion and allocation program. Terms and conditions apply.',
-  sampleDataNotice: 'Visibly labeled development sample data. Live recipient reviews and delivery records are populated upon genuine user submissions.'
+  sampleDataNotice: 'Visibly labeled development sample data. Delivery records are populated upon genuine user submissions.'
 };
 
 export const MOCK_VEHICLES: Vehicle[] = [
@@ -208,42 +208,6 @@ export const MOCK_VEHICLES: Vehicle[] = [
       chargingDescription: 'Native NACS charging compatible with 250 kW Superchargers, replenishing up to 136 miles of range in 15 minutes.',
       termsSummary: 'Recipient must hold valid driver license and meet regional vehicle weight compliance requirements. Itemized delivery and filing fee applies.'
     },
-    isSampleData: true
-  }
-];
-
-export const MOCK_REVIEWS: Review[] = [
-  {
-    id: 'rev-01',
-    author: 'S. Lerner (Sample Record)',
-    cityCountry: 'Los Angeles, CA',
-    vehicleClaimed: 'Model 3 Performance',
-    date: '2026-09-18',
-    rating: 5,
-    title: '[Sample Review] Transparent fee schedule & smooth process',
-    content: '[DEVELOPMENT SAMPLE DATA] Verified zero-vehicle base price ($0.00) alongside clearly itemized $1,390 delivery & documentation charge prior to claim confirmation.',
-    isSampleData: true
-  },
-  {
-    id: 'rev-02',
-    author: 'J. Tanaka (Sample Record)',
-    cityCountry: 'Austin, TX',
-    vehicleClaimed: 'Model Y Long Range',
-    date: '2026-08-30',
-    rating: 5,
-    title: '[Sample Review] Clear delivery intake & carrier coordination',
-    content: '[DEVELOPMENT SAMPLE DATA] Address validation and allocation status progression worked as specified in program terms. Verified Model Y specifications.',
-    isSampleData: true
-  },
-  {
-    id: 'rev-03',
-    author: 'P. Kapoor (Sample Record)',
-    cityCountry: 'New York, NY',
-    vehicleClaimed: 'Model S Plaid',
-    date: '2026-07-22',
-    rating: 5,
-    title: '[Sample Review] Clear specifications & secure workflow',
-    content: '[DEVELOPMENT SAMPLE DATA] Sample evaluation of Model S Plaid tri-motor technical specifications and country eligibility checks.',
     isSampleData: true
   }
 ];

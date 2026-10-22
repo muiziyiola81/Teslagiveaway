@@ -112,14 +112,6 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs">
               <li>
                 <button
-                  onClick={() => navigateTo('reviews')}
-                  className="hover:text-white transition-colors"
-                >
-                  Customer Reviews
-                </button>
-              </li>
-              <li>
-                <button
                   onClick={() => navigateTo('terms')}
                   className="hover:text-white transition-colors"
                 >
@@ -171,17 +163,14 @@ export const Footer: React.FC = () => {
             <button onClick={() => navigateTo('delivery-address')} className="hover:text-white transition-colors">
               Delivery Address
             </button>
-            <button onClick={() => navigateTo('reviews')} className="hover:text-white transition-colors">
-              Reviews
-            </button>
             <button onClick={() => navigateTo('support')} className="hover:text-white transition-colors">
               Support
             </button>
           </nav>
 
-          <div className="flex items-center gap-3 text-xs text-zinc-400 text-right">
+          <div className="flex items-center justify-center md:justify-end gap-3 text-xs text-zinc-400 text-center md:text-right">
             <TeslaLogo variant="compact" />
-            <div className="text-[11px] text-zinc-400 text-left md:text-right">
+            <div className="text-[11px] text-zinc-400 text-center md:text-right">
               <p>© 2026 Tesla Promotion. All rights reserved.</p>
               <p>Authorized vehicle promotion. <button onClick={() => navigateTo('terms')} className="text-zinc-300 hover:text-white underline">Terms and conditions apply.</button></p>
             </div>

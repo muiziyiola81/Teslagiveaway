@@ -37,7 +37,6 @@ export const Navbar: React.FC = () => {
     ...(isAdmin ? [{ id: 'admin-dashboard', label: 'Admin Console' }] : []),
     { id: 'profile', label: 'My Profile' },
     { id: 'delivery-address', label: 'Delivery Address' },
-    { id: 'reviews', label: 'Reviews' },
     { id: 'support', label: 'Support' }
   ];
 
@@ -49,7 +48,6 @@ export const Navbar: React.FC = () => {
     ...(isAdmin ? [{ id: 'admin-dashboard', label: 'Admin Operations Console' }] : []),
     { id: 'profile', label: 'My Profile' },
     { id: 'delivery-address', label: 'Delivery Address' },
-    { id: 'reviews', label: 'Customer Reviews' },
     { id: 'terms', label: 'Terms & Conditions' },
     { id: 'support', label: 'Contact & Support' }
   ];
@@ -138,7 +136,7 @@ export const Navbar: React.FC = () => {
             {currentUser ? (
               <button
                 onClick={() => navigateTo('profile')}
-                className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-white bg-zinc-900 border border-zinc-800 rounded-md hover:border-zinc-700 hover:bg-zinc-800 transition-all whitespace-nowrap shrink-0 max-w-[130px] sm:max-w-[200px]"
+                className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 text-xs font-semibold text-white bg-zinc-900 border border-zinc-800 rounded-md hover:border-zinc-700 hover:bg-zinc-800 transition-all whitespace-nowrap shrink-0 max-w-[100px] xs:max-w-[130px] sm:max-w-[200px]"
               >
                 <UserIcon className="w-3.5 h-3.5 text-[#E82127] shrink-0" />
                 <span className="truncate text-xs">{currentUser.fullName}</span>

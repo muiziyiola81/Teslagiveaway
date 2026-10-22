@@ -1,14 +1,13 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { TeslaLogo, TeslaEmblem, TeslaAuthorizedBadge } from '../components/TeslaBranding';
 
 export const HomePage: React.FC = () => {
   const {
     currentUser,
     navigateTo,
-    deliveryStories,
-    reviews
+    deliveryStories
   } = useApp();
 
   return (
@@ -107,7 +106,7 @@ export const HomePage: React.FC = () => {
               <p className="text-xs uppercase tracking-wider text-zinc-500 font-bold">3. Transparent Settlement</p>
               <h3 className="text-xl font-bold text-white font-display">Flexible Payment Options</h3>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Secure checkout via Flutterwave or direct Cryptocurrency payment with transparent allocation tracking.
+                Secure direct Cryptocurrency payment and institutional bank settlement with transparent allocation tracking.
               </p>
             </div>
           </div>
@@ -205,73 +204,6 @@ export const HomePage: React.FC = () => {
                   <div className="pt-2 border-t border-zinc-900 flex items-center justify-between text-xs text-zinc-400">
                     <span>Recipient: {story.recipientName}</span>
                     <span className="text-[10px] text-zinc-500 uppercase">Sample Workflow Record</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Customer Reviews Section */}
-      <section className="py-16 sm:py-24 bg-[#060607]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#E82127]" />
-                <span className="text-xs font-bold uppercase tracking-widest text-[#E82127]">
-                  Community Feedback
-                </span>
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-display">
-                Program Participant Reviews
-              </h2>
-              <p className="mt-1 text-xs text-zinc-400">
-                Development sample records. Real participant testimonials will be displayed upon genuine user submissions.
-              </p>
-            </div>
-
-            <button
-              onClick={() => navigateTo('reviews')}
-              className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-xs font-bold uppercase tracking-wider text-white border border-zinc-700 rounded transition-colors self-start md:self-auto"
-            >
-              View More Reviews →
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reviews.map(review => (
-              <div
-                key={review.id}
-                className="p-6 rounded-lg bg-zinc-950 border border-zinc-800 flex flex-col justify-between space-y-4"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
-                    <span className="text-zinc-300 font-semibold flex items-center gap-1.5">
-                      {review.vehicleClaimed}
-                    </span>
-                    <span className="text-[10px] text-[#E82127] font-mono uppercase bg-red-950/40 px-1.5 py-0.5 rounded border border-red-900/30">
-                      Sample Data
-                    </span>
-                  </div>
-                  <h3 className="text-sm font-bold text-white mb-2 leading-snug">
-                    {review.title}
-                  </h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed italic">
-                    "{review.content}"
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-zinc-900 text-xs text-zinc-500 flex items-center justify-between">
-                  <div>
-                    <span className="text-zinc-200 font-medium">{review.author}</span>
-                    <span className="block text-[11px] text-zinc-500">{review.cityCountry}</span>
-                  </div>
-                  <div className="flex items-center gap-0.5 text-[#E82127]">
-                    {[...Array(review.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-[#E82127] text-[#E82127]" />
-                    ))}
                   </div>
                 </div>
               </div>

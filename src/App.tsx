@@ -21,7 +21,6 @@ const MyClaimsPage = lazy(() => import('./pages/MyClaimsPage').then(m => ({ defa
 const ProfilePage = lazy(() => import('./pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const DeliveryAddressPage = lazy(() => import('./pages/DeliveryAddressPage').then(m => ({ default: m.DeliveryAddressPage })));
 const DemoCheckoutPage = lazy(() => import('./pages/DemoCheckoutPage').then(m => ({ default: m.DemoCheckoutPage })));
-const ReviewsPage = lazy(() => import('./pages/ReviewsPage').then(m => ({ default: m.ReviewsPage })));
 const TermsPage = lazy(() => import('./pages/LegalPages').then(m => ({ default: m.TermsPage })));
 const PrivacyPage = lazy(() => import('./pages/LegalPages').then(m => ({ default: m.PrivacyPage })));
 const SupportPage = lazy(() => import('./pages/LegalPages').then(m => ({ default: m.SupportPage })));
@@ -102,12 +101,6 @@ const MainRouter: React.FC = () => {
         return (
           <Suspense fallback={<PageLoadingFallback />}>
             <DemoCheckoutPage />
-          </Suspense>
-        );
-      case 'reviews':
-        return (
-          <Suspense fallback={<PageLoadingFallback />}>
-            <ReviewsPage />
           </Suspense>
         );
       case 'terms':

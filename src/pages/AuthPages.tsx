@@ -158,8 +158,8 @@ export const SignInPage: React.FC = () => {
 
       {/* Password Reset Modal */}
       {isResetOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-6 sm:p-8 space-y-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-2xl p-5 sm:p-8 space-y-5 shadow-2xl my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3 text-white">
                 <TeslaEmblem className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" />

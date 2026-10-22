@@ -3,7 +3,6 @@ import {
   User,
   Vehicle,
   Claim,
-  Review,
   DeliveryStory,
   PageView,
   DeliveryAddress,
@@ -14,7 +13,6 @@ import {
 } from '../types';
 import {
   MOCK_VEHICLES,
-  MOCK_REVIEWS,
   MOCK_DELIVERY_STORIES,
   INITIAL_PROMOTION_CONFIG
 } from '../data/mockData';
@@ -42,7 +40,6 @@ interface AppContextType {
   filters: VehicleFilters;
   claims: Claim[];
   userClaims: Claim[];
-  reviews: Review[];
   deliveryStories: DeliveryStory[];
   config: PromotionConfig;
   isMobileNavOpen: boolean;
@@ -106,7 +103,6 @@ interface AppContextType {
     reason: string
   ) => Promise<{ success: boolean; error?: string }>;
   refreshClaims: () => Promise<void>;
-  addReview: (review: Omit<Review, 'id' | 'isSampleData'>) => void;
   updatePromotionConfig: (config: Partial<PromotionConfig>) => void;
   showNotification: (message: string, type?: 'success' | 'error' | 'info') => void;
   clearNotification: () => void;
@@ -133,7 +129,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [claims, setClaims] = useState<Claim[]>([]);
   const [adminClaims, setAdminClaims] = useState<Claim[]>([]);
   const [isLoadingAdminClaims, setIsLoadingAdminClaims] = useState(false);
-  const [reviews, setReviews] = useState<Review[]>(MOCK_REVIEWS);
   const [deliveryStories] = useState<DeliveryStory[]>(MOCK_DELIVERY_STORIES);
   const [config, setConfig] = useState<PromotionConfig>(INITIAL_PROMOTION_CONFIG);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -203,11 +198,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       } else {
         setClaims([]);
       }
-
-      const storedReviews = localStorage.getItem('tesla_reviews_db');
-      if (storedReviews) {
-        setReviews(JSON.parse(storedReviews));
-      }
     } catch {
       // Fallback cleanly
     }
@@ -221,7 +211,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           const validPages: PageView[] = [
             'landing', 'home', 'explore', 'vehicle-details', 'how-to-claim',
             'my-claims', 'profile', 'delivery-address', 'checkout', 'demo-checkout',
-            'reviews', 'terms', 'privacy', 'support', 'auth-signin', 'auth-signup'
+            'terms', 'privacy', 'support', 'auth-signin', 'auth-signup'
           ];
           if (validPages.includes(pagePart as PageView)) {
             setActivePage(pagePart as PageView);
@@ -523,9 +513,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               id: 'pay-' + Date.now(),
               status: resolvedStatus,
               method: paymentDetails.method || 'Standard',
-              provider: paymentDetails.method?.includes('Flutterwave') ? 'Flutterwave' : 'Cryptocurrency',
+              provider: paymentDetails.method?.includes('Bank') ? 'Bank Transfer' : 'Cryptocurrency',
               amountUSD: vehicle.totalMandatoryFeeUSD,
-              transferReference: paymentDetails.transferReference || (paymentDetails.method?.includes('Flutterwave') ? 'FLW-' + Math.floor(10000000 + Math.random() * 90000000) : 'TX-' + Math.random().toString(36).substring(2, 10).toUpperCase()),
+              transferReference: paymentDetails.transferReference || ('TX-' + Math.random().toString(36).substring(2, 10).toUpperCase()),
               submittedAt: new Date().toISOString(),
               cryptoAddress: paymentDetails.cryptoAddress,
               cryptoNetwork: paymentDetails.cryptoNetwork,
@@ -570,9 +560,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         id: 'pay-' + Date.now(),
         status: resolvedStatus,
         method: paymentDetails.method || 'Standard',
-        provider: paymentDetails.method?.includes('Flutterwave') ? 'Flutterwave' : 'Cryptocurrency',
+        provider: paymentDetails.method?.includes('Bank') ? 'Bank Transfer' : 'Cryptocurrency',
         amountUSD: vehicle.totalMandatoryFeeUSD,
-        transferReference: paymentDetails.transferReference || (paymentDetails.method?.includes('Flutterwave') ? 'FLW-' + Math.floor(10000000 + Math.random() * 90000000) : 'TX-' + Math.random().toString(36).substring(2, 10).toUpperCase()),
+        transferReference: paymentDetails.transferReference || ('TX-' + Math.random().toString(36).substring(2, 10).toUpperCase()),
         submittedAt: new Date().toISOString(),
         cryptoAddress: paymentDetails.cryptoAddress,
         cryptoNetwork: paymentDetails.cryptoNetwork,
@@ -961,18 +951,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
-  const addReview = (review: Omit<Review, 'id' | 'isSampleData'>) => {
-    const newRev: Review = {
-      ...review,
-      id: 'rev-' + Date.now(),
-      isSampleData: false
-    };
-    const updated = [newRev, ...reviews];
-    setReviews(updated);
-    localStorage.setItem('tesla_reviews_db', JSON.stringify(updated));
-    showNotification('Thank you! Your review has been recorded.', 'success');
-  };
-
   const updatePromotionConfig = (newCfg: Partial<PromotionConfig>) => {
     setConfig(prev => ({ ...prev, ...newCfg }));
     showNotification('Promotion mode configuration updated.', 'info');
@@ -1050,7 +1028,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         filters,
         claims,
         userClaims,
-        reviews,
         deliveryStories,
         config,
         isMobileNavOpen,
@@ -1075,7 +1052,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         adminVerifyPayment,
         adminRejectPayment,
         refreshClaims,
-        addReview,
         updatePromotionConfig,
         showNotification,
         clearNotification

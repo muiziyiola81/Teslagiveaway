@@ -654,36 +654,36 @@ export const MyClaimsPage: React.FC = () => {
 
       {/* Wire Evidence Submission Modal */}
       {showWireModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl p-4 sm:p-6 md:p-8 space-y-5 sm:space-y-6 shadow-2xl relative my-auto max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded bg-[#E82127]/10 border border-[#E82127]/40 flex items-center justify-center text-[#E82127]">
-                  <Building2 className="w-5 h-5" />
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded bg-[#E82127]/10 border border-[#E82127]/40 flex items-center justify-center text-[#E82127] shrink-0">
+                  <Building2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold font-display text-white">
+                <div className="min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold font-display text-white truncate">
                     Submit Bank Wire Transfer Proof
                   </h3>
-                  <span className="text-xs text-zinc-400">
+                  <span className="text-[11px] sm:text-xs text-zinc-400 block truncate">
                     Mandatory Transport Fee: $1,390.00 USD
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => setShowWireModal(false)}
-                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 transition-colors"
+                className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 transition-colors shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Official Wire Instructions Box */}
-            <div className="p-4 bg-zinc-900/60 rounded-xl border border-zinc-800 space-y-2 text-xs">
+            <div className="p-3.5 sm:p-4 bg-zinc-900/60 rounded-xl border border-zinc-800 space-y-2 text-xs">
               <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-300 block">
                 Official Treasury Settlement Instructions
               </span>
-              <div className="grid grid-cols-2 gap-2 text-zinc-400">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-zinc-400">
                 <div>
                   <span className="text-zinc-500 block text-[10px]">Beneficiary Name:</span>
                   <span className="text-white font-medium">Tesla Allocation Operations</span>
@@ -698,7 +698,7 @@ export const MyClaimsPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-zinc-500 block text-[10px]">Wire Memo / Ref:</span>
-                  <span className="font-mono text-white font-bold">{activeClaim?.trackingNumber}</span>
+                  <span className="font-mono text-white font-bold break-all">{activeClaim?.trackingNumber}</span>
                 </div>
               </div>
             </div>
@@ -787,18 +787,18 @@ export const MyClaimsPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setShowWireModal(false)}
-                  className="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded text-xs font-bold uppercase tracking-wider transition-colors"
+                  className="w-full sm:w-auto px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded text-xs font-bold uppercase tracking-wider transition-colors text-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingWire}
-                  className="px-6 py-2.5 bg-[#E82127] hover:bg-[#b91318] text-white font-bold rounded text-xs uppercase tracking-wider transition-colors shadow-lg flex items-center gap-2 disabled:opacity-50"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-[#E82127] hover:bg-[#b91318] text-white font-bold rounded text-xs uppercase tracking-wider transition-colors shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   <span>{isSubmittingWire ? 'Submitting...' : 'Submit Evidence for Review'}</span>

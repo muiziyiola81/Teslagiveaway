@@ -129,8 +129,8 @@ export const PrivacyPage: React.FC = () => {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white font-display">3. Zero Financial Telemetry</h2>
           <p>
-            We do not store plain credit card numbers, CVVs, or secret cryptocurrency private keys.
-            Payments are securely coordinated through verified checkout partners including Flutterwave
+            We do not store plain financial account numbers or secret cryptocurrency private keys.
+            Payments are securely coordinated through verified institutional accounts
             and direct cryptocurrency networks.
           </p>
         </section>
